@@ -1,0 +1,97 @@
+source venv/bin/activate
+
+python3
+
+from playwright.sync_api import sync_playwright
+
+playwright = sync_playwright().start()
+browser = playwright.chromium.launch(headless = False, slow_mo = 200)
+
+page = browser.new_page()
+
+page.goto('https://unsplash.com/')
+
+page.get_by_name('Whatever is the name').highlight()
+
+
+
+---------Locators-----------
+
+page.locator("css = h1").highlight()
+page.locator("button.btn-outline-success").highlight() 
+//Here button is the tag name whereas btn-online-success is the class name for the tag
+page.locator("button#btnGroupDrop1").click()
+//Here button is the tag name whereas btnGroupDrop1 is the id name for the tag
+
+
+---------Pseudo Classes---------
+page.locator("h1:text('Navbars')").highlight() //This will specifically select the h1 class with the heading "Navbar"
+Similarly, 
+ page.locator("h1:text('Nav')").highlight()
+
+Now Lets Understand about the nth-match---> Whenever we try to find a class for eg a button such that:
+page.locator("button.btn-primary").highlight() //Now this will show all the 74 button with the same class 
+
+So in order to highlight the specific Button we are going to write
+page.locator(":nth-match(button.btn-primary, 4)").highlight()
+OR 
+page.locator(":nth-match(button:text('Primary'), 1)").highlight()
+
+
+---------XPath----------
+<Let's Learn About XPath>
+/html/head/title This is the Basic Xpath which will show all the title in that HTML page 
+However we can also see relative path for the XPath by using "//"
+//h1     This will find all the instances of "h1"
+NOW compile XPath with the Locators
+page.locator("xpath = //h1").highlight()
+page.locator("xpath = //h1[@id='navbar']").highlight()
+We can also write it as
+page.locator("//h1[@id='navbar']").highlight()
+We can also highlight on the basis of the Value
+page.locator("//input[@value='Wrong Value']").highlight()
+
+---------XPath Functions----------
+
+page.locator("//h1[ text() = 'Heading 1']").highlight() Now here text() is the function  
+page.locator("//button[ contains(@class, 'btn btn-outline-primary')]).highlight()  Now here contains is the function
+
+---------Other locators(extra)----------
+
+page.get_by_role("button", name= 'Primary').locator("nth = 2").highlight()
+
+<Parent Selectors>
+page.get_by_label("Email Address") This will give us the email address form but if I want its Parent I am gonna add another locator on it
+page.get_by_label("Email Address").locator("..") This Gives us the parent of the label.
+page.locator("div.dropdown-menu").locator("visible=true").highlight()
+
+---------Mouse Clicks----------
+
+button = page.get_by_role("button", name = "Block button").first
+
+button.dblclick(delay = 500) //Double click the button with the delay of 500ms
+button.click(button = "right") //This means we are click with the right key of the mouse 
+
+You can also use functionality such as .hover()
+
+
+--------Fill Input Fields-----------
+input = page.get_by_placeholder("Enter email")
+input.fill("me@that.site")
+input.clear()
+input.type("me@that.site", delay = 200) //This will type each character with a delay of 200ms
+
+------Checkbox, Radios, and Switches-----------
+checkbox = page.get_by_label("Default checkbox")
+checkbox.click()
+checkbox.is_checked()  //This will give True or False
+checkbox.uncheck()
+
+switch = page.get_by_label("Checked switch checkbox input")
+switch.unchecked()
+switch.check()
+
+
+
+
+
